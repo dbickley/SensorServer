@@ -71,18 +71,39 @@ def sensor_data():
         print("Error storing sensor data:", e)
         return jsonify({"message": "Error storing sensor data"}), 500  # Return 500 for internal server error
 
+# Endpoint to get the last recorded values for each sensor
+@app.route('/last_values', methods=['GET'])
+def get_last_values():
+    try:
+        cursor.execute('''
+            SELECT * FROM (
+                SELECT *, ROW_NUMBER() OVER (PARTITION BY sensorId ORDER BY timestamp DESC) AS rn
+                FROM sensor_data
+            ) WHERE rn = 1
+        ''')
+        data = cursor.fetchall()
+
+        # Format data into dictionary with sensorId as keys
+        last_values = {}
+        for row in data:
+            sensor_id = row[1]
+            last_values[sensor_id] = {
+                "timestamp": row[2],
+                "humidity": row[3],
+                "temperature": row[4],
+                "pressure": row[5],
+                "gas": row[6],
+                "color": row[7],
+                "alpha": row[8]
+            }
+
+        return jsonify(last_values)
+    except Exception as e:
+        print("Error fetching last values:", e)
+        return jsonify({"message": "Error fetching last values"}), 500  # Return 500 for internal server error
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6660)
 
-
-'''
-curl -X POST http://localhost:5000/sensor -H "Content-Type: application/json" -d '{
-    "sensorId": 1,
-    "humidity": 50.2,
-    "temperature": 25.5,
-    "pressure": 1013.25,
-    "gas": 450,
-    "color": "#FFAABB",
-    "alpha": 255
-}'
-'''
