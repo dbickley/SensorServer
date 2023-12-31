@@ -72,7 +72,7 @@ def sensor_data():
         return jsonify({"message": "Error storing sensor data"}), 500  # Return 500 for internal server error
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=6660)
 
 
 '''
