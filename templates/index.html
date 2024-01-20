@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Data Visualization</title>
+</head>
+<body>
+    <h1>Sensor Data Visualization</h1>
+
+    <!-- Display combined charts for all sensor data types -->
+    {% for data_type, chart_html in combined_charts.items() %}
+        <div>
+            <h2>{{ data_type.capitalize() }} Chart</h2>
+            <div>
+                {{ chart_html | safe }}
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+</body>
+</html>
